@@ -27,43 +27,57 @@ package org.mitre.cpe.naming;
 
 import java.text.ParseException;
 
-import org.mitre.cpe.common.*;
+import org.mitre.cpe.common.LogicalValue;
+import org.mitre.cpe.common.Utilities;
+import org.mitre.cpe.common.WellFormedName;
 
 /**
  * The CPENameBinder class is a simple implementation
  * of the CPE Name binding algorithm, as specified in the 
  * CPE Naming Standard version 2.3.  
  * 
- * @see <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information. 
- * @author Joshua Kraunelis
- * @email jkraunelis@mitre.org
+ * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
+ * 
+ * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
+ * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
 public class CPENameBinder {
+
+	private CPENameBinder() {
+		// disable construction
+	}
+
+    // Define the attributes that correspond to the seven components in a v2.2. CPE.
+    public static final WellFormedName.Attribute[] URI_ATTRIBUTES = {
+    		WellFormedName.Attribute.PART,
+    		WellFormedName.Attribute.VENDOR,
+    		WellFormedName.Attribute.PRODUCT,
+    		WellFormedName.Attribute.VERSION,
+    		WellFormedName.Attribute.UPDATE,
+    		WellFormedName.Attribute.EDITION, // requires packing
+    		WellFormedName.Attribute.LANGUAGE};
 
     /**
      * Binds a {@link WellFormedName} object to a URI.
      * @param w WellFormedName to be bound to URI
      * @return URI binding of WFN
      */
-    public String bindToURI(WellFormedName w) {
+    public static String bindToURI(WellFormedName w) {
 
         // Initialize the output with the CPE v2.2 URI prefix.
         String uri = "cpe:/";
 
-        // Define the attributes that correspond to the seven components in a v2.2. CPE.
-        String[] attributes = {"part", "vendor", "product", "version", "update", "edition", "language"};
-
         // Iterate over the well formed name
-        for (String a : attributes) {
+        for (WellFormedName.Attribute a : URI_ATTRIBUTES) {
             String v = "";
-            if (a.equals("edition")) {
+            if (WellFormedName.Attribute.EDITION.equals(a)) {
                 // Call the pack() helper function to compute the proper
                 // binding for the edition element.
-                String ed = bindValueForURI(w.get("edition"));
-                String sw_ed = bindValueForURI(w.get("sw_edition"));
-                String t_sw = bindValueForURI(w.get("target_sw"));
-                String t_hw = bindValueForURI(w.get("target_hw"));
-                String oth = bindValueForURI(w.get("other"));
+                String ed = bindValueForURI(w.get(WellFormedName.Attribute.EDITION));
+                String sw_ed = bindValueForURI(w.get(WellFormedName.Attribute.SW_EDITION));
+                String t_sw = bindValueForURI(w.get(WellFormedName.Attribute.TARGET_SW));
+                String t_hw = bindValueForURI(w.get(WellFormedName.Attribute.TARGET_HW));
+                String oth = bindValueForURI(w.get(WellFormedName.Attribute.OTHER));
                 v = pack(ed, sw_ed, t_sw, t_hw, oth);
             } else {
                 // Get the value for a in w, then bind to a string
@@ -82,16 +96,14 @@ public class CPENameBinder {
      * @param w WellFormedName to bind
      * @return Formatted String
      */
-    public String bindToFS(WellFormedName w) {
+    public static String bindToFS(WellFormedName w) {
         // Initialize the output with the CPE v2.3 string prefix.
         String fs = "cpe:2.3:";
-        for (String a : new String[]{"part", "vendor", "product", "version",
-                    "update", "edition", "language", "sw_edition", "target_sw",
-                    "target_hw", "other"}) {
+        for (WellFormedName.Attribute a : WellFormedName.Attribute.values()) {
             String v = bindValueForFS(w.get(a));
             fs = Utilities.strcat(fs, v);
             // add a colon except at the very end
-            if (!a.contains("other")) {
+            if (!WellFormedName.Attribute.OTHER.equals(a)) {
                 fs = Utilities.strcat(fs, ":");
             }
         }
@@ -104,15 +116,15 @@ public class CPENameBinder {
      * @param v value to convert
      * @return Formatted value
      */
-    private String bindValueForFS(Object v) {
+    private static String bindValueForFS(Object v) {
         if (v instanceof LogicalValue) {
             LogicalValue l = (LogicalValue) v;
             // The value NA binds to a blank.
-            if (l.isANY()) {
+            if (LogicalValue.ANY.equals(l)) {
                 return "*";
             }
             // The value NA binds to a single hyphen.
-            if (l.isNA()) {
+            if (LogicalValue.NA.equals(l)) {
                 return "-";
             }
         }
@@ -125,7 +137,7 @@ public class CPENameBinder {
      * @param s
      * @return 
      */
-    private String processQuotedChars(String s) {
+    private static String processQuotedChars(String s) {
         String result = "";
         int idx = 0;
         while (idx < Utilities.strlen(s)) {
@@ -160,15 +172,15 @@ public class CPENameBinder {
      * @param s string to be converted
      * @return converted string
      */
-    private String bindValueForURI(Object s) {
+    private static String bindValueForURI(Object s) {
         if (s instanceof LogicalValue) {
             LogicalValue l = (LogicalValue) s;
             // The value NA binds to a blank.
-            if (l.isANY()) {
+            if (LogicalValue.ANY.equals(l)) {
                 return "";
             }
             // The value NA binds to a single hyphen.
-            if (l.isNA()) {
+            if (LogicalValue.NA.equals(l)) {
                 return "-";
             }
         }
@@ -185,7 +197,7 @@ public class CPENameBinder {
      * @param s string to be transformed
      * @return transformed string
      */
-    private String transformForURI(String s) {
+    private static String transformForURI(String s) {
         String result = "";
         int idx = 0;
 
@@ -225,7 +237,7 @@ public class CPENameBinder {
      * @param c the single character string to be encoded
      * @return the percent encoded string
      */
-    private String pctEncode(String c) {
+    private static String pctEncode(String c) {
         if (c.equals("!")) {
             return "%21";
         }
@@ -336,7 +348,7 @@ public class CPENameBinder {
      * @param oth other edition information string
      * @return the packed string, or blank
      */
-    private String pack(String ed, String sw_ed, String t_sw, String t_hw, String oth) {
+    private static String pack(String ed, String sw_ed, String t_sw, String t_hw, String oth) {
         if (sw_ed.equals("") && t_sw.equals("") && t_hw.equals("") && oth.equals("")) {
             // All the extended attributes are blank, so don't do
             // any packing, just return ed.
@@ -352,7 +364,7 @@ public class CPENameBinder {
      * @param s the string to be trimmed
      * @return the trimmed string
      */
-    private String trim(String s) {
+    private static String trim(String s) {
         String s1 = Utilities.reverse(s);
         int idx = 0;
         for (int i = 0; i != Utilities.strlen(s1); i++) {
@@ -369,18 +381,17 @@ public class CPENameBinder {
 
     public static void main(String[] args) throws ParseException {
         // A few examples.
-        WellFormedName wfn = new WellFormedName("a", "microsoft", "internet_explorer", "8\\.0\\.6001", "beta", new LogicalValue("ANY"), "sp2", null, null, null, null);
+        WellFormedName wfn = new WellFormedName("a", "microsoft", "internet_explorer", "8\\.0\\.6001", "beta", LogicalValue.ANY, "sp2", null, null, null, null);
         WellFormedName wfn2 = new WellFormedName();
-        wfn2.set("part", "a");
-        wfn2.set("vendor", "foo\\$bar");
-        wfn2.set("product", "insight");
-        wfn2.set("version", "7\\.4\\.0\\.1570");
-        wfn2.set("target_sw", "win2003");
-        wfn2.set("update", new LogicalValue("NA"));
-        wfn2.set("sw_edition", "online");
-        wfn2.set("target_hw", "x64");
-        CPENameBinder cpenb = new CPENameBinder();
-        System.out.println(cpenb.bindToURI(wfn));
-        System.out.println(cpenb.bindToFS(wfn2));
+        wfn2.set(WellFormedName.Attribute.PART, "a");
+        wfn2.set(WellFormedName.Attribute.VENDOR, "foo\\$bar");
+        wfn2.set(WellFormedName.Attribute.PRODUCT, "insight");
+        wfn2.set(WellFormedName.Attribute.VERSION, "7\\.4\\.0\\.1570");
+        wfn2.set(WellFormedName.Attribute.TARGET_SW, "win2003");
+        wfn2.set(WellFormedName.Attribute.UPDATE, LogicalValue.NA);
+        wfn2.set(WellFormedName.Attribute.SW_EDITION, "online");
+        wfn2.set(WellFormedName.Attribute.TARGET_HW, "x64");
+        System.out.println(CPENameBinder.bindToURI(wfn));
+        System.out.println(CPENameBinder.bindToFS(wfn2));
     }
 }

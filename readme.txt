@@ -47,14 +47,22 @@ Build Instructions
 
 Required Software
    - JDK (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-   - Apache Ant (http://ant.apache.org/)
-	
+   - Apache Ant (http://ant.apache.org/) or Apache Maven (http://maven.apache.org/)
+
+Ant Build
+=========	
 Run Ant using the build.xml supplied in this release.  The Ant script will 
 compile all Java source files under the src/ directory and generate 3 
 sample JAR files in the dist/ directory.
 
+Maven Build
+===========
+Run Maven using the pom.xml supplied in this release.  The Maven build 
+compile all Java source files under the src/ directory and generate a 
+single JAR file in the target/ directory.
+
 This implementation has been built and tested using the Java Platform 
-Standard Edition 6 JDK  and Apache Ant 1.8 on Microsoft Windows 7.  
+Standard Edition 6 JDK, Apache Ant 1.8 and Apache Maven 2.2.1 on Microsoft Windows 7.  
 
 Run Instructions
 -----------------
