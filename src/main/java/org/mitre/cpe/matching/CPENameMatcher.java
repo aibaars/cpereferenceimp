@@ -26,20 +26,28 @@
 package org.mitre.cpe.matching;
 
 import java.text.ParseException;
-import java.util.Hashtable;
-import org.mitre.cpe.naming.CPENameUnbinder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import org.mitre.cpe.common.*;
+import org.mitre.cpe.common.LogicalValue;
+import org.mitre.cpe.common.Utilities;
+import org.mitre.cpe.common.WellFormedName;
+import org.mitre.cpe.common.WellFormedName.Attribute;
+import org.mitre.cpe.naming.CPENameUnbinder;
 
 /**
  * The CPENameMatcher is an implementation of the CPE Matching algorithm, 
  * as specified in the CPE Matching Standard version 2.3.  
  * 
- * @see <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information. 
- * @author Joshua Kraunelis
- * @email jkraunelis@mitre.org
+ * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
+ * 
+ * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
+ * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
 public class CPENameMatcher {
+	private CPENameMatcher() {
+		// disable construction
+	}
 
     /**
      * Tests two Well Formed Names for disjointness.  
@@ -47,11 +55,11 @@ public class CPENameMatcher {
      * @param target Target WFN
      * @return true if the names are disjoint, false otherwise
      */
-    public boolean isDisjoint(WellFormedName source, WellFormedName target) {
+    public static boolean isDisjoint(WellFormedName source, WellFormedName target) {
         // if any pairwise comparison is disjoint, the names are disjoint.
-        Hashtable result_list = compareWFNs(source, target);
-        for (Object result : result_list.values()) {
-            if (result.equals(Relation.DISJOINT)) {
+    	Map<WellFormedName.Attribute, Relation> result_list = compareWFNs(source, target);
+        for (Relation result : result_list.values()) {
+            if (Relation.DISJOINT.equals(result)) {
                 return true;
             }
         }
@@ -64,11 +72,11 @@ public class CPENameMatcher {
      * @param target Target WFN
      * @return true if the names are equal, false otherwise
      */
-    public boolean isEqual(WellFormedName source, WellFormedName target) {
+    public static boolean isEqual(WellFormedName source, WellFormedName target) {
         // if every pairwise comparison is equal, the names are equal.
-        Hashtable result_list = compareWFNs(source, target);
-        for (Object result : result_list.values()) {
-            if (!(result.equals(Relation.EQUAL))) {
+    	Map<WellFormedName.Attribute, Relation> result_list = compareWFNs(source, target);
+        for (Relation result : result_list.values()) {
+            if (!(Relation.EQUAL.equals(result))) {
                 return false;
             }
         }
@@ -82,12 +90,12 @@ public class CPENameMatcher {
      * @param target Target WFN
      * @return true if the target is a subset of the source, false otherwise
      */
-    public boolean isSubset(WellFormedName source, WellFormedName target) {
+    public static boolean isSubset(WellFormedName source, WellFormedName target) {
         // if any comparison is anything other than subset or equal, then target is
         // not a subset of source.
-        Hashtable result_list = compareWFNs(source, target);
-        for (Object result : result_list.values()) {
-            if (!(result.equals(Relation.SUBSET)) && !(result.equals(Relation.EQUAL))) {
+    	Map<WellFormedName.Attribute, Relation> result_list = compareWFNs(source, target);
+        for (Relation result : result_list.values()) {
+            if (!(Relation.SUBSET.equals(result)) && !(Relation.EQUAL.equals(result))) {
                 return false;
             }
         }
@@ -101,12 +109,12 @@ public class CPENameMatcher {
      * @param target Target WFN
      * @return true if the target is a superset of the source, false otherwise
      */
-    public boolean isSuperset(WellFormedName source, WellFormedName target) {
+    public static boolean isSuperset(WellFormedName source, WellFormedName target) {
         // if any comparison is anything other than superset or equal, then target is not
         // a superset of source.
-        Hashtable result_list = compareWFNs(source, target);
-        for (Object result : result_list.values()) {
-            if ((!result.equals(Relation.SUPERSET)) && (!result.equals(Relation.EQUAL))) {
+    	Map<WellFormedName.Attribute, Relation> result_list = compareWFNs(source, target);
+        for (Relation result : result_list.values()) {
+            if ((!Relation.SUPERSET.equals(result)) && (!Relation.EQUAL.equals(result))) {
                 return false;
             }
         }
@@ -119,19 +127,11 @@ public class CPENameMatcher {
      * @param target Target WFN
      * @return A Hashtable mapping attribute string to attribute value Relation
      */
-    public Hashtable compareWFNs(WellFormedName source, WellFormedName target) {
-        Hashtable result = new Hashtable();
-        result.put("part", compare(source.get("part"), target.get("part")));
-        result.put("vendor", compare(source.get("vendor"), target.get("vendor")));
-        result.put("product", compare(source.get("product"), target.get("product")));
-        result.put("version", compare(source.get("version"), target.get("version")));
-        result.put("update", compare(source.get("update"), target.get("update")));
-        result.put("edition", compare(source.get("edition"), target.get("edition")));
-        result.put("language", compare(source.get("language"), target.get("language")));
-        result.put("sw_edition", compare(source.get("sw_edition"), target.get("sw_edition")));
-        result.put("target_sw", compare(source.get("target_sw"), target.get("target_sw")));
-        result.put("target_hw", compare(source.get("target_hw"), target.get("target_hw")));
-        result.put("other", compare(source.get("other"), target.get("other")));
+    public static Map<WellFormedName.Attribute, Relation> compareWFNs(WellFormedName source, WellFormedName target) {
+        Map<WellFormedName.Attribute, Relation> result = new LinkedHashMap<WellFormedName.Attribute, Relation>(Attribute.values().length);
+        for (WellFormedName.Attribute attribute : Attribute.values()) {
+            result.put(attribute, compare(source.get(attribute), target.get(attribute)));
+        }
         return result;
     }
 
@@ -141,7 +141,7 @@ public class CPENameMatcher {
      * @param target Target attribute value.
      * @return The relation between the two attribute values.
      */
-    private Object compare(Object source, Object target) {
+    private static Relation compare(Object source, Object target) {
         // matching is case insensitive, convert strings to lowercase.
         if (isString(source)) {
             source = Utilities.toLowercase((String) source);
@@ -170,30 +170,30 @@ public class CPENameMatcher {
         }
         if (lvSource != null && lvTarget != null) {
             // If Logical Values are equal, result is equal.
-            if (lvSource.isANY() == lvTarget.isANY() || lvSource.isNA() == lvTarget.isNA()) {
+            if (lvSource.equals(lvTarget)) {
                 return Relation.EQUAL;
             }
         }
         // If source value is ANY, result is a superset.
         if (lvSource != null) {
-            if (lvSource.isANY()) {
+            if (LogicalValue.ANY.equals(lvSource)) {
                 return Relation.SUPERSET;
             }
         }
         // If target value is ANY, result is a subset.
         if (lvTarget != null) {
-            if (lvTarget.isANY()) {
+            if (LogicalValue.ANY.equals(lvTarget)) {
                 return Relation.SUBSET;
             }
         }
         // If source or target is NA, result is disjoint.
         if (lvSource != null) {
-            if (lvSource.isNA()) {
+            if (LogicalValue.NA.equals(lvSource)) {
                 return Relation.DISJOINT;
             }
         }
         if (lvTarget != null) {
-            if (lvTarget.isNA()) {
+            if (LogicalValue.NA.equals(lvTarget)) {
                 return Relation.DISJOINT;
             }
         }
@@ -211,7 +211,7 @@ public class CPENameMatcher {
      * 
      * @return Relation between source and target Strings.
      */
-    private Object compareStrings(String source, String target) {
+    private static Relation compareStrings(String source, String target) {
         int start = 0;
         int end = Utilities.strlen(source);
         int begins = 0;
@@ -265,7 +265,7 @@ public class CPENameMatcher {
      * @param idx end index
      * @return true if the number of backslash characters is even, false if odd
      */
-    private boolean isEvenWildcards(String str, int idx) {
+    private static boolean isEvenWildcards(String str, int idx) {
         int result = 0;
         while ((idx > 0) && (Utilities.strchr(str, "\\", idx - 1)) != -1) {
             idx = idx - 1;
@@ -279,7 +279,7 @@ public class CPENameMatcher {
      * @param arg the Object to test
      * @return true if arg is a String, false if not
      */
-    private boolean isString(Object arg) {
+    private static boolean isString(Object arg) {
         if (arg instanceof String) {
             return true;
         } else {
@@ -289,19 +289,17 @@ public class CPENameMatcher {
 
     public static void main(String[] args) throws ParseException {
         // Examples.
-        WellFormedName wfn = new WellFormedName("a", "microsoft", "internet_explorer", "8\\.0\\.6001", "beta", new LogicalValue("ANY"), "sp2", null, null, null, null);
-        WellFormedName wfn2 = new WellFormedName("a", "microsoft", "internet_explorer", new LogicalValue("ANY"), new LogicalValue("ANY"), new LogicalValue("ANY"), new LogicalValue("ANY"), new LogicalValue("ANY"), new LogicalValue("ANY"), new LogicalValue("ANY"), new LogicalValue("ANY"));
-        CPENameMatcher cpenm = new CPENameMatcher();
-        System.out.println(cpenm.isDisjoint(wfn, wfn2)); // false
-        System.out.println(cpenm.isEqual(wfn, wfn2)); // false
-        System.out.println(cpenm.isSubset(wfn, wfn2)); // true, wfn2 is a subset of wfn
-        System.out.println(cpenm.isSuperset(wfn, wfn2)); // false
-        CPENameUnbinder cpenu = new CPENameUnbinder();
-        wfn = cpenu.unbindFS("cpe:2.3:a:adobe:*:9.*:*:PalmOS:*:*:*:*:*");
-        wfn2 = cpenu.unbindURI("cpe:/a::Reader:9.3.2:-:-");
-        System.out.println(cpenm.isDisjoint(wfn, wfn2)); // true, wfn2 and wfn are disjoint
-        System.out.println(cpenm.isEqual(wfn, wfn2)); // false 
-        System.out.println(cpenm.isSubset(wfn, wfn2)); // false
-        System.out.println(cpenm.isSuperset(wfn, wfn2)); // false
+        WellFormedName wfn = new WellFormedName("a", "microsoft", "internet_explorer", "8\\.0\\.6001", "beta", LogicalValue.ANY, "sp2", null, null, null, null);
+        WellFormedName wfn2 = new WellFormedName("a", "microsoft", "internet_explorer", LogicalValue.ANY, LogicalValue.ANY, LogicalValue.ANY, LogicalValue.ANY, LogicalValue.ANY, LogicalValue.ANY, LogicalValue.ANY, LogicalValue.ANY);
+        System.out.println(CPENameMatcher.isDisjoint(wfn, wfn2)); // false
+        System.out.println(CPENameMatcher.isEqual(wfn, wfn2)); // false
+        System.out.println(CPENameMatcher.isSubset(wfn, wfn2)); // true, wfn2 is a subset of wfn
+        System.out.println(CPENameMatcher.isSuperset(wfn, wfn2)); // false
+        wfn = CPENameUnbinder.unbindFS("cpe:2.3:a:adobe:*:9.*:*:PalmOS:*:*:*:*:*");
+        wfn2 = CPENameUnbinder.unbindURI("cpe:/a::Reader:9.3.2:-:-");
+        System.out.println(CPENameMatcher.isDisjoint(wfn, wfn2)); // true, wfn2 and wfn are disjoint
+        System.out.println(CPENameMatcher.isEqual(wfn, wfn2)); // false 
+        System.out.println(CPENameMatcher.isSubset(wfn, wfn2)); // false
+        System.out.println(CPENameMatcher.isSuperset(wfn, wfn2)); // false
     }
 }

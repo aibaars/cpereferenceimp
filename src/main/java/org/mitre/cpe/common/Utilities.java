@@ -31,9 +31,10 @@ import java.text.ParseException;
  * A collection of utility functions for use with the org.mitre.cpe.matching and
  * org.mitre.cpe.naming packages.
  * 
- * @see <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information. 
- * @author Joshua Kraunelis
- * @email jkraunelis@mitre.org
+ * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
+ * 
+ * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
+ * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
 public class Utilities {
 
@@ -43,11 +44,11 @@ public class Utilities {
      * @return a single string representing all the arguments, concatenated  
      */
     public static String strcat(String... strings) {
-        String s = "";
-        for (int i = 0; i != strings.length; i++) {
-            s = s.concat(strings[i]);
+        StringBuilder retval = new StringBuilder();
+		for (String s : strings) {
+        	retval.append(s);
         }
-        return s;
+        return retval.toString();
     }
 
     /**
