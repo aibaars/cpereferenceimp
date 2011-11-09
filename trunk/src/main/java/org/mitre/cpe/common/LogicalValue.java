@@ -23,13 +23,17 @@
 // TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package org.mitre.cpe.matching;
+package org.mitre.cpe.common;
 
 /**
- * Java enumeration for relational values.
- * @author Joshua Kraunelis
- * @email jkraunelis@mitre.org
+ * This class represents a Logical Value.  
+ * 
+ * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
+ * 
+ * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
+ * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
-public enum Relation {
-    DISJOINT, SUBSET, SUPERSET, EQUAL, UNDEFINED
+public enum LogicalValue {
+	ANY,
+	NA;
 }

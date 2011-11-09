@@ -35,18 +35,23 @@ import org.mitre.cpe.common.*;
  * of the CPE Name unbinding algorithm, as specified in the 
  * CPE Naming Standard version 2.3.  
  * 
- * @see <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information. 
- * @author Joshua Kraunelis
- * @email jkraunelis@mitre.org
+ * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
+ * 
+ * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
+ * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
 public class CPENameUnbinder {
 
-    /**
+	private CPENameUnbinder() {
+		// disable construction
+	}
+
+	/**
      * Top level function used to unbind a URI to a WFN.
-     * @param uri String representing the URI to be unbound.
-     * @return WellFormedName representing the unbound URI.
+     * @param uri String representing the URI to be unbound
+     * @return WellFormedName representing the unbound URI
      */
-    public WellFormedName unbindURI(String uri) throws ParseException {
+    public static WellFormedName unbindURI(String uri) throws ParseException {
         // Validate the URI
         Utilities.validateURI(uri);
         // Initialize the empty WFN.
@@ -55,23 +60,11 @@ public class CPENameUnbinder {
         for (int i = 0; i != 8; i++) {
             // get the i'th component of uri
             String v = getCompURI(uri, i);
-            switch (i) {
-                case 1:
-                    result.set("part", decode(v));
-                    break;
-                case 2:
-                    result.set("vendor", decode(v));
-                    break;
-                case 3:
-                    result.set("product", decode(v));
-                    break;
-                case 4:
-                    result.set("version", decode(v));
-                    break;
-                case 5:
-                    result.set("update", decode(v));
-                    break;
-                case 6:
+            if (i > 0) {
+            	// Get the WFN component using the enum ordinal
+            	WellFormedName.Attribute attribute = WellFormedName.Attribute.values()[i-1];
+
+            	if (WellFormedName.Attribute.EDITION.equals(attribute)) {
                     // Special handling for edition component.
                     // Unpack edition if needed.
                     if (v.equals("") || v.equals("-")
@@ -79,15 +72,14 @@ public class CPENameUnbinder {
                         // Just a logical value or a non-packed value.
                         // So unbind to legacy edition, leaving other
                         // extended attributes unspecified.
-                        result.set("edition", decode(v));
+                        result.set(attribute, decode(v));
                     } else {
                         // We have five values packed together here.
                         unpack(v, result);
                     }
-                    break;
-                case 7:
-                    result.set("language", decode(v));
-                    break;
+            	} else {
+                    result.set(attribute, decode(v));
+            	}
             }
         }
         return result;
@@ -96,10 +88,10 @@ public class CPENameUnbinder {
     /**
      * Top level function to unbind a formatted string to WFN.
      * @param fs Formatted string to unbind
-     * @return WellFormedName
-     * @throws ParseException 
+     * @return WellFormedName representing the unbound formatted string
+     * @throws ParseException if the fs argument is malformed
      */
-    public WellFormedName unbindFS(String fs) throws ParseException {
+    public static WellFormedName unbindFS(String fs) throws ParseException {
         // Validate the formatted string
         Utilities.validateFS(fs);
         // Initialize empty WFN
@@ -111,42 +103,12 @@ public class CPENameUnbinder {
             Object v = getCompFS(fs, a);
             // Unbind the string.
             v = unbindValueFS((String) v);
+
+        	// Get the WFN component using the enum ordinal
+        	WellFormedName.Attribute attribute = WellFormedName.Attribute.values()[a-2];
+
             // Set the value of the corresponding attribute.
-            switch (a) {
-                case 2:
-                    result.set("part", v);
-                    break;
-                case 3:
-                    result.set("vendor", v);
-                    break;
-                case 4:
-                    result.set("product", v);
-                    break;
-                case 5:
-                    result.set("version", v);
-                    break;
-                case 6:
-                    result.set("update", v);
-                    break;
-                case 7:
-                    result.set("edition", v);
-                    break;
-                case 8:
-                    result.set("language", v);
-                    break;
-                case 9:
-                    result.set("sw_edition", v);
-                    break;
-                case 10:
-                    result.set("target_sw", v);
-                    break;
-                case 11:
-                    result.set("target_hw", v);
-                    break;
-                case 12:
-                    result.set("other", v);
-                    break;
-            }
+            result.set(attribute, v);
         }
         return result;
     }
@@ -158,7 +120,7 @@ public class CPENameUnbinder {
      * @param i index of field to retrieve from fs.
      * @return value of index of formatted string 
      */
-    private String getCompFS(String fs, int i) {
+    private static String getCompFS(String fs, int i) {
         if (i == 0) {
             // return the substring from index 0 to the first occurence of an
             // unescaped colon
@@ -180,14 +142,14 @@ public class CPENameUnbinder {
      * string, add quoting of non-alphanumerics as needed.
      * @param s value to be unbound
      * @return logical value or quoted string
-     * @throws ParseException 
+     * @throws ParseException if the s argument is malformed
      */
-    private Object unbindValueFS(String s) throws ParseException {
+    private static Object unbindValueFS(String s) throws ParseException {
         if (s.equals("*")) {
-            return new LogicalValue("ANY");
+            return LogicalValue.ANY;
         }
         if (s.equals("-")) {
-            return new LogicalValue("NA");
+            return LogicalValue.NA;
         }
         return addQuoting(s);
     }
@@ -196,11 +158,11 @@ public class CPENameUnbinder {
      * Inspect each character in a string, copying quoted characters, with 
      * their escaping, into the result.  Look for unquoted non alphanumerics
      * and if not "*" or "?", add escaping.
-     * @param s
-     * @return
-     * @throws ParseException 
+     * @param s the string to process
+     * @return a string that has been properly escaped
+     * @throws ParseException if the s argument is malformed
      */
-    private String addQuoting(String s) throws ParseException {
+    private static String addQuoting(String s) throws ParseException {
         String result = "";
         int idx = 0;
         boolean embedded = false;
@@ -260,12 +222,12 @@ public class CPENameUnbinder {
 
     /**
      * Return the i'th component of the URI.
-     * @param uri String representation of URI to retrieve components from.
-     * @param i Index of component to return.
+     * @param uri String representation of URI to retrieve components from
+     * @param i Index of component to return
      * @return If i = 0, returns the URI scheme. Otherwise, returns the i'th 
-     * component of uri.
+     * 		component of uri
      */
-    private String getCompURI(String uri, int i) {
+    private static String getCompURI(String uri, int i) {
         if (i == 0) {
             return Utilities.substr(uri, i, uri.indexOf("/"));
         }
@@ -291,12 +253,12 @@ public class CPENameUnbinder {
      * @throws ParseException 
      * @see CPENameBinder#pctEncode(java.lang.String) 
      */
-    private Object decode(String s) throws ParseException {
+    private static Object decode(String s) throws ParseException {
         if (s.equals("")) {
-            return new LogicalValue("ANY");
+            return LogicalValue.ANY;
         }
         if (s.equals("-")) {
-            return new LogicalValue("NA");
+            return LogicalValue.NA;
         }
         // Start the scanning loop.
         // Normalize: convert all uppercase letters to lowercase first.
@@ -414,9 +376,9 @@ public class CPENameUnbinder {
      * WellFormedName accordingly.  
      * @param s packed String
      * @param wfn WellFormedName 
-     * @return The augmented WellFormedName.
+     * @return The augmented WellFormedName
      */
-    private WellFormedName unpack(String s, WellFormedName wfn) {
+    private static WellFormedName unpack(String s, WellFormedName wfn) {
         // Parse out the five elements.
         int start = 1;
         int end;
@@ -456,11 +418,11 @@ public class CPENameUnbinder {
         }
         // Set each component in the WFN.
         try {
-            wfn.set("edition", decode(ed));
-            wfn.set("sw_edition", decode(sw_edition));
-            wfn.set("target_sw", decode(t_sw));
-            wfn.set("target_hw", decode(t_hw));
-            wfn.set("other", decode(oth));
+            wfn.set(WellFormedName.Attribute.EDITION, decode(ed));
+            wfn.set(WellFormedName.Attribute.SW_EDITION, decode(sw_edition));
+            wfn.set(WellFormedName.Attribute.TARGET_SW, decode(t_sw));
+            wfn.set(WellFormedName.Attribute.TARGET_HW, decode(t_hw));
+            wfn.set(WellFormedName.Attribute.OTHER, decode(oth));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -469,16 +431,15 @@ public class CPENameUnbinder {
 
     public static void main(String[] args) throws ParseException, IOException {
         // A few examples.
-        CPENameUnbinder cpenu = new CPENameUnbinder();
-        WellFormedName wfn = cpenu.unbindURI("cpe:/a:microsoft:internet_explorer%01%01%01%01:?:beta");
+        WellFormedName wfn = CPENameUnbinder.unbindURI("cpe:/a:microsoft:internet_explorer%01%01%01%01:?:beta");
         System.out.println(wfn.toString());
-        wfn = cpenu.unbindURI("cpe:/a:microsoft:internet_explorer:8.%2a:sp%3f");
+        wfn = CPENameUnbinder.unbindURI("cpe:/a:microsoft:internet_explorer:8.%2a:sp%3f");
         System.out.println(wfn.toString());
-        wfn = cpenu.unbindURI("cpe:/a:microsoft:internet_explorer:8.%02:sp%01");
+        wfn = CPENameUnbinder.unbindURI("cpe:/a:microsoft:internet_explorer:8.%02:sp%01");
         System.out.println(wfn.toString());
-        wfn = cpenu.unbindURI("cpe:/a:hp:insight_diagnostics:7.4.0.1570::~~online~win2003~x64~");
+        wfn = CPENameUnbinder.unbindURI("cpe:/a:hp:insight_diagnostics:7.4.0.1570::~~online~win2003~x64~");
         System.out.println(wfn.toString());
-        System.out.println(cpenu.unbindFS("cpe:2.3:a:micr\\?osoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*"));
+        System.out.println(CPENameUnbinder.unbindFS("cpe:2.3:a:micr\\?osoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*"));
 
     }
 }
