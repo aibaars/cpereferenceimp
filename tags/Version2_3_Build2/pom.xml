@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.mitre.cpe</groupId>
+  <artifactId>cpe</artifactId>
+  <version>2.3.2-SNAPSHOT</version>
+
+  <name>CPE Naming and Matching Reference Implementation</name>
+  <url>http://cpe.mitre.org/</url>
+
+  <properties>
+    <java.source>1.6</java.source>
+    <java.target>1.6</java.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+        <version>4.5</version>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <source>${java.source}</source>
+            <target>${java.target}</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.7</version>
+          <configuration>
+            <links>
+              <link>http://download.oracle.com/javase/6/docs/api/</link>
+              <link>http://download.oracle.com/javaee/6/api/</link>
+            </links>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+      	  <artifactId>maven-site-plugin</artifactId>
+      	  <version>2.2</version>
+      	</plugin>
+      	<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.7.2</version>
+      	</plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  
+  <scm>
+    <connection>scm:svn:https://cpereferenceimp.svn.sourceforge.net/svnroot/cpereferenceimp</connection>
+    <developerConnection>scm:svn:https://cpereferenceimp.svn.sourceforge.net/svnroot/cpereferenceimp</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://cpereferenceimp.svn.sourceforge.net/svnroot/cpereferenceimp</url>
+  </scm>
+  
+</project>
