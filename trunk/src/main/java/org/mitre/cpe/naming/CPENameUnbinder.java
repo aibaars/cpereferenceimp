@@ -42,8 +42,8 @@ import org.mitre.cpe.common.*;
  */
 public class CPENameUnbinder {
 
-	private CPENameUnbinder() {
-		// disable construction
+	protected CPENameUnbinder() {
+		// do not allow public construction
 	}
 
 	/**
@@ -52,6 +52,11 @@ public class CPENameUnbinder {
      * @return WellFormedName representing the unbound URI
      */
     public static WellFormedName unbindURI(String uri) throws ParseException {
+    	CPENameUnbinder cpeNameUnbinder = new CPENameUnbinder();
+    	return cpeNameUnbinder.unbindURIInstance(uri);
+    }
+    
+    protected WellFormedName unbindURIInstance(String uri) throws ParseException {
         // Validate the URI
         Utilities.validateURI(uri);
         // Initialize the empty WFN.
@@ -92,6 +97,11 @@ public class CPENameUnbinder {
      * @throws ParseException if the fs argument is malformed
      */
     public static WellFormedName unbindFS(String fs) throws ParseException {
+    	CPENameUnbinder cpeNameUnbinder = new CPENameUnbinder();
+    	return cpeNameUnbinder.unbindFSInstance(fs);
+    }
+
+    protected WellFormedName unbindFSInstance(String fs) throws ParseException {
         // Validate the formatted string
         Utilities.validateFS(fs);
         // Initialize empty WFN
@@ -120,7 +130,7 @@ public class CPENameUnbinder {
      * @param i index of field to retrieve from fs.
      * @return value of index of formatted string 
      */
-    private static String getCompFS(String fs, int i) {
+    protected String getCompFS(String fs, int i) {
         if (i == 0) {
             // return the substring from index 0 to the first occurence of an
             // unescaped colon
@@ -144,7 +154,7 @@ public class CPENameUnbinder {
      * @return logical value or quoted string
      * @throws ParseException if the s argument is malformed
      */
-    private static Object unbindValueFS(String s) throws ParseException {
+    protected Object unbindValueFS(String s) throws ParseException {
         if (s.equals("*")) {
             return LogicalValue.ANY;
         }
@@ -162,7 +172,7 @@ public class CPENameUnbinder {
      * @return a string that has been properly escaped
      * @throws ParseException if the s argument is malformed
      */
-    private static String addQuoting(String s) throws ParseException {
+    protected String addQuoting(String s) throws ParseException {
         String result = "";
         int idx = 0;
         boolean embedded = false;
@@ -227,7 +237,7 @@ public class CPENameUnbinder {
      * @return If i = 0, returns the URI scheme. Otherwise, returns the i'th 
      * 		component of uri
      */
-    private static String getCompURI(String uri, int i) {
+    protected String getCompURI(String uri, int i) {
         if (i == 0) {
             return Utilities.substr(uri, i, uri.indexOf("/"));
         }
@@ -253,7 +263,7 @@ public class CPENameUnbinder {
      * @throws ParseException 
      * @see CPENameBinder#pctEncode(java.lang.String) 
      */
-    private static Object decode(String s) throws ParseException {
+    protected Object decode(String s) throws ParseException {
         if (s.equals("")) {
             return LogicalValue.ANY;
         }
@@ -378,7 +388,7 @@ public class CPENameUnbinder {
      * @param wfn WellFormedName 
      * @return The augmented WellFormedName
      */
-    private static WellFormedName unpack(String s, WellFormedName wfn) {
+    protected WellFormedName unpack(String s, WellFormedName wfn) {
         // Parse out the five elements.
         int start = 1;
         int end;

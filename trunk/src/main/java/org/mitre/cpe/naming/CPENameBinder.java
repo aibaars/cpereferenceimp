@@ -43,8 +43,8 @@ import org.mitre.cpe.common.WellFormedName;
  */
 public class CPENameBinder {
 
-	private CPENameBinder() {
-		// disable construction
+	protected CPENameBinder() {
+		// do not allow public construction
 	}
 
     // Define the attributes that correspond to the seven components in a v2.2. CPE.
@@ -63,7 +63,11 @@ public class CPENameBinder {
      * @return URI binding of WFN
      */
     public static String bindToURI(WellFormedName w) {
-
+    	CPENameBinder cpeNameBinder = new CPENameBinder();
+    	return cpeNameBinder.bindToURIInstance(w);
+    }
+    
+    protected String bindToURIInstance(WellFormedName w) {
         // Initialize the output with the CPE v2.2 URI prefix.
         String uri = "cpe:/";
 
@@ -97,6 +101,11 @@ public class CPENameBinder {
      * @return Formatted String
      */
     public static String bindToFS(WellFormedName w) {
+    	CPENameBinder cpeNameBinder = new CPENameBinder();
+    	return cpeNameBinder.bindToFSInstance(w);
+    }
+
+    protected String bindToFSInstance(WellFormedName w) {
         // Initialize the output with the CPE v2.3 string prefix.
         String fs = "cpe:2.3:";
         for (WellFormedName.Attribute a : WellFormedName.Attribute.values()) {
@@ -116,7 +125,7 @@ public class CPENameBinder {
      * @param v value to convert
      * @return Formatted value
      */
-    private static String bindValueForFS(Object v) {
+    protected String bindValueForFS(Object v) {
         if (v instanceof LogicalValue) {
             LogicalValue l = (LogicalValue) v;
             // The value NA binds to a blank.
@@ -137,7 +146,7 @@ public class CPENameBinder {
      * @param s
      * @return 
      */
-    private static String processQuotedChars(String s) {
+    protected String processQuotedChars(String s) {
         String result = "";
         int idx = 0;
         while (idx < Utilities.strlen(s)) {
@@ -172,7 +181,7 @@ public class CPENameBinder {
      * @param s string to be converted
      * @return converted string
      */
-    private static String bindValueForURI(Object s) {
+    protected String bindValueForURI(Object s) {
         if (s instanceof LogicalValue) {
             LogicalValue l = (LogicalValue) s;
             // The value NA binds to a blank.
@@ -197,7 +206,7 @@ public class CPENameBinder {
      * @param s string to be transformed
      * @return transformed string
      */
-    private static String transformForURI(String s) {
+    protected String transformForURI(String s) {
         String result = "";
         int idx = 0;
 
@@ -237,7 +246,7 @@ public class CPENameBinder {
      * @param c the single character string to be encoded
      * @return the percent encoded string
      */
-    private static String pctEncode(String c) {
+    protected String pctEncode(String c) {
         if (c.equals("!")) {
             return "%21";
         }
@@ -348,7 +357,7 @@ public class CPENameBinder {
      * @param oth other edition information string
      * @return the packed string, or blank
      */
-    private static String pack(String ed, String sw_ed, String t_sw, String t_hw, String oth) {
+    protected String pack(String ed, String sw_ed, String t_sw, String t_hw, String oth) {
         if (sw_ed.equals("") && t_sw.equals("") && t_hw.equals("") && oth.equals("")) {
             // All the extended attributes are blank, so don't do
             // any packing, just return ed.
@@ -364,7 +373,7 @@ public class CPENameBinder {
      * @param s the string to be trimmed
      * @return the trimmed string
      */
-    private static String trim(String s) {
+    protected String trim(String s) {
         String s1 = Utilities.reverse(s);
         int idx = 0;
         for (int i = 0; i != Utilities.strlen(s1); i++) {
