@@ -132,73 +132,103 @@ public class WellFormedName {
         	value = LogicalValue.ANY;
         } else {
 	        String svalue = (String) value;
-	        // Reg exs
-	        // check for printable characters - no control characters
-	        if (!svalue.matches("\\p{Print}*")) {
-	            throw new ParseException("Error! encountered non printable character in: " + svalue, 0);
-	        }
-	        // svalue has whitespace
-	        if (svalue.matches(".*\\s+.*")) {
-	            throw new ParseException("Error! component cannot contain whitespace: " + svalue, 0);
-	        }
-	        // svalue has more than one unquoted star
-	        if (svalue.matches("\\*{2,}.*") || svalue.matches(".*\\*{2,}")) {
-	            throw new ParseException("Error! component cannot contain more than one * in sequence: " + svalue, 0);
-	        }
-	        // svalue has unquoted punctuation embedded
-	        if (svalue.matches(".*(?<!\\\\)[\\!\\\"\\#\\$\\%\\&\\\'\\(\\)\\+\\,\\.\\/\\:\\;\\<\\=\\>\\@\\[\\]\\^\\`\\{\\|\\}\\~\\-].*")) {
-	            throw new ParseException("Error! component cannot contain unquoted punctuation: " + svalue, 0);
-	        }
-	        // svalue has an unquoted *
-	        if (svalue.matches(".+(?<!\\\\)[\\*].+")) {
-	            throw new ParseException("Error! component cannot contain embedded *: " + svalue, 0);
-	        }
-	        // svalue has embedded unquoted ?
-	        // this will catch a single unquoted ?, so make sure we deal with that
-	        //if (svalue.matches("\\?*[\\p{Graph}&&[^\\?]]*(?<!\\\\)[\\?][\\p{Graph}&&[^\\?]]*\\?*")) {
-	        if (svalue.contains("?")) {
-	            if (svalue.equals("?")) {
-	                // single ? is valid
-	            	value = svalue;
-	            } else {
-		            // remove leading and trailing ?s
-		            StringBuffer v = new StringBuffer(svalue);
-		            while (v.indexOf("?") == 0) {
-		                // remove all leading ?'s
-		                v.deleteCharAt(0);
-		            }
-		            v = v.reverse();
-		            while (v.indexOf("?") == 0) {
-		                // remove all trailing ?'s (string has been reversed)
-		                v.deleteCharAt(0);
-		            }
-		            // back to normal
-		            v = v.reverse();
-		            // after leading and trailing ?s are removed, check if value
-		            // contains unquoted ?s
-		            if (v.toString().matches(".+(?<!\\\\)[\\?].+")) {
-		                throw new ParseException("Error! component cannot contain embedded ?: " + svalue, 0);
-		            }
-	            }
-	        }
-	        // single asterisk is not allowed
-	        if (svalue.equals("*")) {
-	            throw new ParseException("Error! component cannot be a single *: " + svalue, 0);
-	        }
-	        // quoted hyphen not allowed by itself
-	        if (svalue.equals("-")) {
-	            throw new ParseException("Error! component cannot be quoted hyphen: " + svalue, 0);
-	        }
-	        // part must be a, o, or h
-	        if (Attribute.PART.equals(attribute)) {
-	            if (!svalue.equals("a") && !svalue.equals("o") && !svalue.equals("h")) {
-	                throw new ParseException("Error! part component must be one of the following: 'a', 'o', 'h': " + svalue, 0);
-	            }
-	        }
+	        checkForNonPrintableCharacters(svalue);
+	        checkForWhitespaces(svalue);
+	        checkForMultipleUnquotedStars(svalue);
+	        checkForUnquotedPunctuation(svalue);
+	        checkForUnquotedStar(svalue);
+	        checkForEmbeddedUnquotedQuestionMark(svalue);
+	        checkForSingleStar(svalue);
+	        checkForSingleQuotedHyphen(svalue);
+	        checkPart(attribute, svalue);
 	        value = svalue;
         }
         // should be good to go
         this.wfn.put(attribute, value);
+    }
+    
+    protected void checkForNonPrintableCharacters(String svalue) throws ParseException {
+        // check for printable characters - no control characters
+        if (!svalue.matches("\\p{Print}*")) {
+            throw new ParseException("Error! encountered non printable character in: " + svalue, 0);
+        }
+    }
+
+    protected void checkForWhitespaces(String svalue) throws ParseException {
+        // svalue has whitespace
+        if (svalue.matches(".*\\s+.*")) {
+            throw new ParseException("Error! component cannot contain whitespace: " + svalue, 0);
+        }
+    }
+    
+    protected void checkForMultipleUnquotedStars(String svalue) throws ParseException {
+        // svalue has more than one unquoted star
+        if (svalue.matches("\\*{2,}.*") || svalue.matches(".*\\*{2,}")) {
+            throw new ParseException("Error! component cannot contain more than one * in sequence: " + svalue, 0);
+        }
+    }
+    
+    protected void checkForUnquotedPunctuation(String svalue) throws ParseException {
+        // svalue has unquoted punctuation embedded
+        if (svalue.matches(".*(?<!\\\\)[\\!\\\"\\#\\$\\%\\&\\\'\\(\\)\\+\\,\\.\\/\\:\\;\\<\\=\\>\\@\\[\\]\\^\\`\\{\\|\\}\\~\\-].*")) {
+            throw new ParseException("Error! component cannot contain unquoted punctuation: " + svalue, 0);
+        }
+    }
+    
+    protected void checkForUnquotedStar(String svalue) throws ParseException {
+        // svalue has an unquoted *
+        if (svalue.matches(".+(?<!\\\\)[\\*].+")) {
+            throw new ParseException("Error! component cannot contain embedded *: " + svalue, 0);
+        }
+    }
+    
+    protected void checkForEmbeddedUnquotedQuestionMark(String svalue) throws ParseException {
+        // svalue has embedded unquoted ?
+        // this will catch a single unquoted ?, so make sure we deal with that
+        //if (svalue.matches("\\?*[\\p{Graph}&&[^\\?]]*(?<!\\\\)[\\?][\\p{Graph}&&[^\\?]]*\\?*")) {
+        if (svalue.contains("?") && !svalue.equals("?")) {
+            // remove leading and trailing ?s
+            StringBuffer v = new StringBuffer(svalue);
+            while (v.indexOf("?") == 0) {
+                // remove all leading ?'s
+                v.deleteCharAt(0);
+            }
+            v = v.reverse();
+            while (v.indexOf("?") == 0) {
+                // remove all trailing ?'s (string has been reversed)
+                v.deleteCharAt(0);
+            }
+            // back to normal
+            v = v.reverse();
+            // after leading and trailing ?s are removed, check if value
+            // contains unquoted ?s
+            if (v.toString().matches(".+(?<!\\\\)[\\?].+")) {
+                throw new ParseException("Error! component cannot contain embedded ?: " + svalue, 0);
+            }
+        }
+    }
+    
+    protected void checkForSingleStar(String svalue) throws ParseException {
+        // single asterisk is not allowed
+        if (svalue.equals("*")) {
+            throw new ParseException("Error! component cannot be a single *: " + svalue, 0);
+        }
+    }
+    
+    protected void checkForSingleQuotedHyphen(String svalue) throws ParseException {
+        // quoted hyphen not allowed by itself
+        if (svalue.equals("-")) {
+            throw new ParseException("Error! component cannot be quoted hyphen: " + svalue, 0);
+        }
+    }
+    
+    protected void checkPart(Attribute attribute, String svalue) throws ParseException {
+        // part must be a, o, or h
+        if (Attribute.PART.equals(attribute)) {
+            if (!svalue.equals("a") && !svalue.equals("o") && !svalue.equals("h")) {
+                throw new ParseException("Error! part component must be one of the following: 'a', 'o', 'h': " + svalue, 0);
+            }
+        }
     }
 
     /**
