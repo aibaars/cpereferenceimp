@@ -31,10 +31,10 @@ import java.util.Map;
 
 /**
  * The WellFormedName class represents a Well Formed Name, as defined
- * in the CPE Specification version 2.3.  
- * 
- * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for details.
- * 
+ * in the CPE Specification version 2.3.
+ *
+ * See <a href="http://cpe.mitre.org">cpe.mitre.org</a> for details.
+ *
  * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
  * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
@@ -58,7 +58,7 @@ public class WellFormedName {
     private Map<Attribute, Object> wfn = new EnumMap<Attribute, Object>(Attribute.class);
 
     /**
-     * Constructs a new WellFormedName object, with all components set to the 
+     * Constructs a new WellFormedName object, with all components set to the
      * default value "ANY".
      */
     public WellFormedName() throws ParseException {
@@ -71,8 +71,8 @@ public class WellFormedName {
     }
 
     /**
-     * Constructs a new WellFormedName object, setting each component to the 
-     * given parameter value.  If a parameter is null, the component is set to 
+     * Constructs a new WellFormedName object, setting each component to the
+     * given parameter value.  If a parameter is null, the component is set to
      * the default value "ANY".
      * @param part string representing the part component
      * @param vendor string representing the vendor component
@@ -84,7 +84,7 @@ public class WellFormedName {
      * @param sw_edition string representing the sw_edition component
      * @param target_sw string representing the target_sw component
      * @param target_hw string representing the target_hw component
-     * @param other string representing the other component 
+     * @param other string representing the other component
      */
     public WellFormedName(Object part, Object vendor, Object product,
             Object version, Object update, Object edition, Object language, Object sw_edition, Object target_sw, Object target_hw, Object other) throws ParseException {
@@ -101,7 +101,7 @@ public class WellFormedName {
         set(Attribute.OTHER, other);
     }
 
-    /** 
+    /**
      * @param attribute String representing the component value to get
      * @return the String value of the given component, or default value "ANY"
      * if the component does not exist
@@ -114,8 +114,8 @@ public class WellFormedName {
         }
     }
 
-    /** 
-     * Sets the given attribute to value, if the attribute is in the list of 
+    /**
+     * Sets the given attribute to value, if the attribute is in the list of
      * permissible components
      * @param attribute enumerated value representing the component to set
      * @param value Object representing the value of the given component
@@ -146,7 +146,7 @@ public class WellFormedName {
         // should be good to go
         this.wfn.put(attribute, value);
     }
-    
+
     protected void checkForNonPrintableCharacters(String svalue) throws ParseException {
         // check for printable characters - no control characters
         if (!svalue.matches("\\p{Print}*")) {
@@ -160,28 +160,28 @@ public class WellFormedName {
             throw new ParseException("Error! component cannot contain whitespace: " + svalue, 0);
         }
     }
-    
+
     protected void checkForMultipleUnquotedStars(String svalue) throws ParseException {
         // svalue has more than one unquoted star
         if (svalue.matches("\\*{2,}.*") || svalue.matches(".*\\*{2,}")) {
             throw new ParseException("Error! component cannot contain more than one * in sequence: " + svalue, 0);
         }
     }
-    
+
     protected void checkForUnquotedPunctuation(String svalue) throws ParseException {
         // svalue has unquoted punctuation embedded
         if (svalue.matches(".*(?<!\\\\)[\\!\\\"\\#\\$\\%\\&\\\'\\(\\)\\+\\,\\.\\/\\:\\;\\<\\=\\>\\@\\[\\]\\^\\`\\{\\|\\}\\~\\-].*")) {
             throw new ParseException("Error! component cannot contain unquoted punctuation: " + svalue, 0);
         }
     }
-    
+
     protected void checkForUnquotedStar(String svalue) throws ParseException {
         // svalue has an unquoted *
         if (svalue.matches(".+(?<!\\\\)[\\*].+")) {
             throw new ParseException("Error! component cannot contain embedded *: " + svalue, 0);
         }
     }
-    
+
     protected void checkForEmbeddedUnquotedQuestionMark(String svalue) throws ParseException {
         // svalue has embedded unquoted ?
         // this will catch a single unquoted ?, so make sure we deal with that
@@ -207,21 +207,21 @@ public class WellFormedName {
             }
         }
     }
-    
+
     protected void checkForSingleStar(String svalue) throws ParseException {
         // single asterisk is not allowed
         if (svalue.equals("*")) {
             throw new ParseException("Error! component cannot be a single *: " + svalue, 0);
         }
     }
-    
+
     protected void checkForSingleQuotedHyphen(String svalue) throws ParseException {
         // quoted hyphen not allowed by itself
         if (svalue.equals("-")) {
             throw new ParseException("Error! component cannot be quoted hyphen: " + svalue, 0);
         }
     }
-    
+
     protected void checkPart(Attribute attribute, String svalue) throws ParseException {
         // part must be a, o, or h
         if (Attribute.PART.equals(attribute)) {
@@ -232,7 +232,7 @@ public class WellFormedName {
     }
 
     /**
-     * 
+     *
      * @return String representation of the WellFormedName
      */
     @Override

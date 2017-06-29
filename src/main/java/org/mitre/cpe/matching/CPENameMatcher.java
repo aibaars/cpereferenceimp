@@ -36,11 +36,11 @@ import org.mitre.cpe.common.WellFormedName.Attribute;
 import org.mitre.cpe.naming.CPENameUnbinder;
 
 /**
- * The CPENameMatcher is an implementation of the CPE Matching algorithm, 
- * as specified in the CPE Matching Standard version 2.3.  
- * 
- * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
- * 
+ * The CPENameMatcher is an implementation of the CPE Matching algorithm,
+ * as specified in the CPE Matching Standard version 2.3.
+ *
+ * See <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information.
+ *
  * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
  * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
@@ -50,7 +50,7 @@ public class CPENameMatcher {
 	}
 
     /**
-     * Tests two Well Formed Names for disjointness.  
+     * Tests two Well Formed Names for disjointness.
      * @param source Source WFN
      * @param target Target WFN
      * @return true if the names are disjoint, false otherwise
@@ -67,7 +67,7 @@ public class CPENameMatcher {
     }
 
     /**
-     * Tests two Well Formed Names for equality. 
+     * Tests two Well Formed Names for equality.
      * @param source Source WFN
      * @param target Target WFN
      * @return true if the names are equal, false otherwise
@@ -85,7 +85,7 @@ public class CPENameMatcher {
 
     /**
      * Tests if the target Well Formed Name is a subset of the source Well Formed
-     * Name.  
+     * Name.
      * @param source Source WFN
      * @param target Target WFN
      * @return true if the target is a subset of the source, false otherwise
@@ -202,13 +202,13 @@ public class CPENameMatcher {
     }
 
     /**
-     * Compares a source string to a target string, and addresses the condition 
-     * in which the source string includes unquoted special characters. It 
-     * performs a simple regular expression  match, with the assumption that 
-     * (as required) unquoted special characters appear only at the beginning 
-     * and/or the end of the source string. It also properly differentiates 
+     * Compares a source string to a target string, and addresses the condition
+     * in which the source string includes unquoted special characters. It
+     * performs a simple regular expression  match, with the assumption that
+     * (as required) unquoted special characters appear only at the beginning
+     * and/or the end of the source string. It also properly differentiates
      * between unquoted and quoted special characters.
-     * 
+     *
      * @return Relation between source and target Strings.
      */
     private static Relation compareStrings(String source, String target) {
@@ -298,7 +298,7 @@ public class CPENameMatcher {
         wfn = CPENameUnbinder.unbindFS("cpe:2.3:a:adobe:*:9.*:*:PalmOS:*:*:*:*:*");
         wfn2 = CPENameUnbinder.unbindURI("cpe:/a::Reader:9.3.2:-:-");
         System.out.println(CPENameMatcher.isDisjoint(wfn, wfn2)); // true, wfn2 and wfn are disjoint
-        System.out.println(CPENameMatcher.isEqual(wfn, wfn2)); // false 
+        System.out.println(CPENameMatcher.isEqual(wfn, wfn2)); // false
         System.out.println(CPENameMatcher.isSubset(wfn, wfn2)); // false
         System.out.println(CPENameMatcher.isSuperset(wfn, wfn2)); // false
     }

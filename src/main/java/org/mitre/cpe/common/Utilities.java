@@ -30,9 +30,9 @@ import java.text.ParseException;
 /**
  * A collection of utility functions for use with the org.mitre.cpe.matching and
  * org.mitre.cpe.naming packages.
- * 
- * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
- * 
+ *
+ * See <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information.
+ *
  * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
  * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
@@ -41,7 +41,7 @@ public class Utilities {
     /**
      * Concatenates an arbitrary number of strings, in the given order.
      * @param strings strings to be concatenated
-     * @return a single string representing all the arguments, concatenated  
+     * @return a single string representing all the arguments, concatenated
      */
     public static String strcat(String... strings) {
         StringBuilder retval = new StringBuilder();
@@ -53,7 +53,7 @@ public class Utilities {
 
     /**
      * Extracts the characters between b and e, from the string s.
-     * @param s the string which the substring should be extracted from     
+     * @param s the string which the substring should be extracted from
      * @param b beginning index
      * @param e ending index
      * @return the characters between index b and index e
@@ -64,7 +64,7 @@ public class Utilities {
 
     /**
      * Returns the number of characters in the given string.
-     * @param s the string 
+     * @param s the string
      * @return the number of characters in s
      */
     public static int strlen(String s) {
@@ -72,9 +72,9 @@ public class Utilities {
     }
 
     /**
-     * Searches a string for a character starting at a given offset.  
+     * Searches a string for a character starting at a given offset.
      * Returns the offset of the character if found, -1 if not found.
-     * 
+     *
      * @param s string to be searched
      * @param chr character to search for
      * @param off offset to start at
@@ -94,8 +94,8 @@ public class Utilities {
     }
 
     /**
-     * Searches a string for the first occurrence of another string, starting 
-     * at a given offset.  
+     * Searches a string for the first occurrence of another string, starting
+     * at a given offset.
      * @param str1 String to search.
      * @param str2 String to search for.
      * @param off Integer offset or -1 if not found.
@@ -182,7 +182,7 @@ public class Utilities {
     }
 
     /**
-     * Returns true if the string contains only 
+     * Returns true if the string contains only
      * alphanumeric characters or the underscore character,
      * false otherwise.
      * @param c the string in question
@@ -205,9 +205,9 @@ public class Utilities {
     }
 
     /**
-     * This function is not part of the reference implementation pseudo code 
-     * found in the CPE 2.3 specification.  It enforces two rules in the 
-     * specification: 
+     * This function is not part of the reference implementation pseudo code
+     * found in the CPE 2.3 specification.  It enforces two rules in the
+     * specification:
      *   URI must start with the characters "cpe:/"
      *   A URI may not contain more than 7 components
      * If either rule is violated, a ParseException is thrown.
@@ -230,7 +230,7 @@ public class Utilities {
     }
 
     /**
-     * This function is not part of the reference implementation pseudo code 
+     * This function is not part of the reference implementation pseudo code
      * found in the CPE 2.3 specification.  It enforces three rules found in the
      * specification:
      *    Formatted string must start with the characters "cpe:2.3:"

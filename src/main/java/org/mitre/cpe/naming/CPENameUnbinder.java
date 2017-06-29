@@ -32,11 +32,11 @@ import org.mitre.cpe.common.*;
 
 /**
  * The CPENameUnBinder class is a simple implementation
- * of the CPE Name unbinding algorithm, as specified in the 
- * CPE Naming Standard version 2.3.  
- * 
- * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
- * 
+ * of the CPE Name unbinding algorithm, as specified in the
+ * CPE Naming Standard version 2.3.
+ *
+ * See <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information.
+ *
  * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
  * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
@@ -55,7 +55,7 @@ public class CPENameUnbinder {
     	CPENameUnbinder cpeNameUnbinder = new CPENameUnbinder();
     	return cpeNameUnbinder.unbindURIInstance(uri);
     }
-    
+
     protected WellFormedName unbindURIInstance(String uri) throws ParseException {
         // Validate the URI
         Utilities.validateURI(uri);
@@ -124,18 +124,18 @@ public class CPENameUnbinder {
     }
 
     /**
-     * Returns the i'th field of the formatted string.  The colon is the field 
+     * Returns the i'th field of the formatted string.  The colon is the field
      * delimiter unless prefixed by a backslash.
      * @param fs formatted string to retrieve from
      * @param i index of field to retrieve from fs.
-     * @return value of index of formatted string 
+     * @return value of index of formatted string
      */
     protected String getCompFS(String fs, int i) {
         if (i == 0) {
             // return the substring from index 0 to the first occurence of an
             // unescaped colon
             int colon_idx = Utilities.getUnescapedColonIndex(fs);
-            // If no colon is found, we are at the end of the formatted string, 
+            // If no colon is found, we are at the end of the formatted string,
             // so just return what's left.
             if (colon_idx == 0) {
                 return fs;
@@ -165,7 +165,7 @@ public class CPENameUnbinder {
     }
 
     /**
-     * Inspect each character in a string, copying quoted characters, with 
+     * Inspect each character in a string, copying quoted characters, with
      * their escaping, into the result.  Look for unquoted non alphanumerics
      * and if not "*" or "?", add escaping.
      * @param s the string to process
@@ -206,7 +206,7 @@ public class CPENameUnbinder {
                 }
             }
             if (c.equals("?")) {
-                // An unquoted question mark must appear at the beginning or 
+                // An unquoted question mark must appear at the beginning or
                 // end of the string, or in a leading or trailing sequence.
                 if ( // ? legal at beginning or end
                         ((idx == 0) || (idx == (Utilities.strlen(s) - 1)))
@@ -234,7 +234,7 @@ public class CPENameUnbinder {
      * Return the i'th component of the URI.
      * @param uri String representation of URI to retrieve components from
      * @param i Index of component to return
-     * @return If i = 0, returns the URI scheme. Otherwise, returns the i'th 
+     * @return If i = 0, returns the URI scheme. Otherwise, returns the i'th
      * 		component of uri
      */
     protected String getCompURI(String uri, int i) {
@@ -255,13 +255,13 @@ public class CPENameUnbinder {
 
     /**
      * Scans a string and returns a copy with all percent-encoded characters
-     * decoded.  This function is the inverse of pctEncode() defined in the 
-     * CPENameBinder class.  Only legal percent-encoded forms are decoded.  
-     * Others raise a ParseException. 
+     * decoded.  This function is the inverse of pctEncode() defined in the
+     * CPENameBinder class.  Only legal percent-encoded forms are decoded.
+     * Others raise a ParseException.
      * @param s String to be decoded
      * @return decoded string
-     * @throws ParseException 
-     * @see CPENameBinder#pctEncode(java.lang.String) 
+     * @throws ParseException
+     * @see CPENameBinder#pctEncode(java.lang.String)
      */
     protected Object decode(String s) throws ParseException {
         if (s.equals("")) {
@@ -382,10 +382,10 @@ public class CPENameUnbinder {
     }
 
     /**
-     * Unpacks the elements in s and sets the attributes in the given 
-     * WellFormedName accordingly.  
+     * Unpacks the elements in s and sets the attributes in the given
+     * WellFormedName accordingly.
      * @param s packed String
-     * @param wfn WellFormedName 
+     * @param wfn WellFormedName
      * @return The augmented WellFormedName
      */
     protected WellFormedName unpack(String s, WellFormedName wfn) {

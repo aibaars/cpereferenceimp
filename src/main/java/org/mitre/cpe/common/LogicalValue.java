@@ -26,10 +26,10 @@
 package org.mitre.cpe.common;
 
 /**
- * This class represents a Logical Value.  
- * 
- * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
- * 
+ * This class represents a Logical Value.
+ *
+ * See <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information.
+ *
  * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
  * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */

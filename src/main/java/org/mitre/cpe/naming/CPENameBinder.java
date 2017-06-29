@@ -33,11 +33,11 @@ import org.mitre.cpe.common.WellFormedName;
 
 /**
  * The CPENameBinder class is a simple implementation
- * of the CPE Name binding algorithm, as specified in the 
- * CPE Naming Standard version 2.3.  
- * 
- * See {@link <a href="http://cpe.mitre.org">cpe.mitre.org</a>} for more information.
- * 
+ * of the CPE Name binding algorithm, as specified in the
+ * CPE Naming Standard version 2.3.
+ *
+ * See <a href="http://cpe.mitre.org">cpe.mitre.org</a> for more information.
+ *
  * @author <a href="mailto:jkraunelis@mitre.org">Joshua Kraunelis</a>
  * @author <a href="mailto:david.waltermire@nist.gov">David Waltermire</a>
  */
@@ -66,7 +66,7 @@ public class CPENameBinder {
     	CPENameBinder cpeNameBinder = new CPENameBinder();
     	return cpeNameBinder.bindToURIInstance(w);
     }
-    
+
     protected String bindToURIInstance(WellFormedName w) {
         // Initialize the output with the CPE v2.2 URI prefix.
         String uri = "cpe:/";
@@ -141,10 +141,10 @@ public class CPENameBinder {
     }
 
     /**
-     * Inspect each character in string s.  Certain nonalpha characters pass 
+     * Inspect each character in string s.  Certain nonalpha characters pass
      * thru without escaping into the result, but most retain escaping.
      * @param s
-     * @return 
+     * @return
      */
     protected String processQuotedChars(String s) {
         String result = "";
@@ -176,7 +176,7 @@ public class CPENameBinder {
 
     /**
      * Converts a string to the proper string for including in
-     * a CPE v2.2-conformant URI.  The logical value ANY binds 
+     * a CPE v2.2-conformant URI.  The logical value ANY binds
      * to the blank in the 2.2-conformant URI.
      * @param s string to be converted
      * @return converted string
@@ -347,8 +347,8 @@ public class CPENameBinder {
     }
 
     /**
-     * Packs the values of the five arguments into the single 
-     * edition component.  If all the values are blank, the 
+     * Packs the values of the five arguments into the single
+     * edition component.  If all the values are blank, the
      * function returns a blank.
      * @param ed edition string
      * @param sw_ed software edition string
