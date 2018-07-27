@@ -341,7 +341,7 @@ public class CPENameUnbinder {
             } else if (form.equals("%2f")) {
                 result = Utilities.strcat(result, "\\/");
             } else if (form.equals("%3a")) {
-                result = Utilities.strcat(result, "\\)");
+                result = Utilities.strcat(result, "\\:");
             } else if (form.equals("%3b")) {
                 result = Utilities.strcat(result, "\\;");
             } else if (form.equals("%3c")) {
