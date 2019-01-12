@@ -105,16 +105,19 @@ public class Utilities {
     }
 
     /**
-     * Searches string for special characters * and ?
-     * @param string String to be searched
-     * @return true if string contains wildcard, false otherwise
+     * Searches string for unquoted special characters * and ?
+     *
+     * @param str String to be searched
+     * @return true if string contains any unquoted special characters, otherwise false
      */
-    public static boolean containsWildcards(String string) {
-        if (string.contains("*") || string.contains("?")) {
-            if (!(string.contains("\\"))) {
-                return true;
+    public static boolean containsWildcards(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '*' || c == '?') {
+                if (i == 0 || str.charAt(i - 1) != '\\') {
+                    return true;
+                }
             }
-            return false;
         }
         return false;
     }
@@ -125,11 +128,7 @@ public class Utilities {
      * @return true if number is even, false if not
      */
     public static boolean isEvenNumber(int num) {
-        if (num % 2 == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return num % 2 == 0 ? true : false;
     }
 
     /**
@@ -145,10 +144,11 @@ public class Utilities {
         boolean active = false;
         int i = 0;
         while (i < end) {
+            active = !active && str.charAt(i) == '\\';
             if (active && (i >= start)) {
-                result = result + 1;
+                result += 1;
             }
-            i = i + 1;
+            i += 1;
         }
         return result;
     }
@@ -248,9 +248,9 @@ public class Utilities {
             if (in.charAt(i) == ':') {
                 if (in.charAt(i - 1) != '\\') {
                     count++;
-                }
-                if ((i + 1) < in.length() && in.charAt(i + 1) == ':') {
-                    throw new ParseException("Error parsing formatted string.  Found empty component", 0);
+                    if (((i + 1) < in.length() && in.charAt(i + 1) == ':') || ((i + 1) == in.length())) {
+                        throw new ParseException("Error parsing formatted string.  Found empty component", 0);
+                    }
                 }
             }
         }
